@@ -41,6 +41,10 @@ row format delimited
 stored as orc
 as select * from playstore_external;
 
+select date_format(last_update, 'MMMMMMMMMM dd, yyyy') from playstore;
+
 select * from playstore;
+
+describe extended playstore_external;
 
 select count(DISTINCT category) from playstore;
