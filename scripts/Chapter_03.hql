@@ -2,6 +2,8 @@
 --Chapter 03 - Hive Data Types 
 
 --Create table using ARRAY, MAP, STRUCT, and Composite data type
+
+
 CREATE TABLE employee (
   name string,
   work_place ARRAY<string>,
@@ -9,6 +11,8 @@ CREATE TABLE employee (
   skills_score MAP<string,int>,
   depart_title MAP<STRING,ARRAY<STRING>>
 )
+
+
 ROW FORMAT DELIMITED
 FIELDS TERMINATED BY '|'
 COLLECTION ITEMS TERMINATED BY ','
@@ -16,7 +20,7 @@ MAP KEYS TERMINATED BY ':'
 STORED AS TEXTFILE;
 
 --Verify tables creations run in Beeline
-!table employee
+-- !table employee
 
 --Load data
 LOAD DATA INPATH '/tmp/hivedemo/data/employee.txt' OVERWRITE INTO TABLE employee;

@@ -19,3 +19,9 @@ create table if not exists test_table (
     id int comment 'id',
     internal_array array<string> comment 'internal stuff'
 )
+
+show create table employee;
+
+show tblproperties employee;
+
+select * from employee;
