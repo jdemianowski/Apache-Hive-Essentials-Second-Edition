@@ -35,9 +35,12 @@ tblproperties ("skip.header.line.count"="1");
 
 select * from playstore_external;
 
+drop table if exists playstore;
 create table playstore
 row format delimited
 stored as orc
 as select * from playstore_external;
 
 select * from playstore;
+
+select count(DISTINCT category) from playstore;
