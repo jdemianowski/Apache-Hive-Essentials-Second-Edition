@@ -15,8 +15,11 @@ create external table ts_external(
     customer_id int,
     country string
 )
-row format delimited
-fields terminated by ','
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+WITH SERDEPROPERTIES (
+   "separatorChar" = ",",
+   "quoteChar"     = "\""
+)
 stored as textfile
 location 'hdfs:/tmp/ecommerce/'
 tblproperties ("skip.header.line.count"="1");
@@ -35,7 +38,7 @@ as select
     cast(from_unixtime(unix_timestamp(invoice_date, 'MM/dd/yyyy HH:mm')) as timestamp) as invoice_date,
     unit_price,
     customer_id,
-    (unit_price * quantity) as price,
+--     (unit_price * quantity) as price,
     country
 from ts_external;
 select * from ts;
@@ -45,8 +48,13 @@ select avg(price) as avg_price, avg(quantity) as avg_quantity, avg(unit_price) a
 select count(DISTINCT stock_code) as unique_stock_codes, count(DISTINCT customer_id) as unique_customers from ts;
 
 select count(distinct country) from ts;
-select count(distinct country) from ts_partitioned;
+select count(distinct country) from ts_external;
 
+select count(DISTINCT stock_code) as unique_stock_codes, count(DISTINCT customer_id) as unique_customers from ts
+WHERE country='United Kingdom';
+
+select count(DISTINCT stock_code) as unique_stock_codes, count(DISTINCT customer_id) as unique_customers from ts_partitioned
+WHERE country='United Kingdom';
 
 SET hive.exec.dynamic.partition=true;
 SET hive.exec.dynamic.partition.mode=nonstrict;
@@ -56,13 +64,13 @@ SET  hive.exec.max.dynamic.partitions.pernode=500000;
 
 drop table if exists ts_partitioned;
 create table ts_partitioned(
-    invocie_no int,
+    invocie_no string,
     stock_code string,
     description string,
-    quantity int,
+    quantity string,
     invoice_date string,
-    unit_price float,
-    customer_id int
+    unit_price string,
+    customer_id string
 )
 partitioned by (country string)
 row format delimited
