@@ -4,6 +4,10 @@ create schema if not exists ecommerce;
 
 use ecommerce;
 
+show tables in ecommerce;
+
+show columns in ts_external;
+
 drop table if exists ts_external;
 create external table ts_external(
     invocie_no int,
@@ -30,6 +34,10 @@ drop table if exists ts;
 create table ts
 row format delimited
 stored as orc
+TBLPROPERTIES(
+"orc.compress"="ZLIB",
+"orc.create.index"="true",
+"orc.bloom.filter.columns"="invocie_no,unit_price,quantity")
 as select
     invocie_no,
     stock_code,
@@ -41,7 +49,10 @@ as select
 --     (unit_price * quantity) as price,
     country
 from ts_external;
-select * from ts;
+
+
+select * from ts where quantity > 10;
+
 
 select min(invoice_date), max(invoice_date) from ts;
 select avg(price) as avg_price, avg(quantity) as avg_quantity, avg(unit_price) as avg_unit_price from ts;
@@ -92,3 +103,7 @@ insert into table ts_partitioned partition(country) select
 select * from ts_partitioned;
 
 select * from ts_external;
+
+show create table ts_external;
+
+show tblproperties ts_external;
