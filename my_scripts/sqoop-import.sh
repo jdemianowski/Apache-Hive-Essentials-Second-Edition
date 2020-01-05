@@ -12,5 +12,17 @@ sqoop import --connect jdbc:postgresql://osboxes.local:5432/chinook --username p
 
 
 sqoop import --connect jdbc:postgresql://osboxes.local:5432/worldDB --username postgres --password cloudera --table city --m 4 --hive-import --hive-overwrite --hive-table=worldDB.city
-sqoop import --connect jdbc:postgresql://osboxes.local:5432/worldDB --username postgres --password cloudera --table country --m 4 --hive-import --hive-overwrite --hive-table=worldDB.country
-sqoop import --connect jdbc:postgresql://osboxes.local:5432/worldDB --username postgres --password cloudera --table countrylanguage --m 4 --hive-import --hive-overwrite --hive-table=worldDB.countrylanguage
+sqoop import "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" --connect jdbc:postgresql://osboxes.local:5432/worldDB --username postgres --password cloudera --table country --m 4 --hive-import --hive-overwrite --hive-table=worldDB.country
+sqoop import "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" --connect jdbc:postgresql://osboxes.local:5432/worldDB --username postgres --password cloudera --table countrylanguage --m 4 --hive-import --hive-overwrite --hive-table=worldDB.countrylanguage
+
+sqoop import-all-tables "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
+--connect jdbc:postgresql://osboxes.local:5432/chinook \
+--username postgres --password cloudera \
+--m 1 \
+--warehouse-dir /user/sqoop/chinook_external
+
+sqoop import-all-tables "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
+--connect jdbc:postgresql://osboxes.local:5432/worldDB \
+--username postgres --password cloudera \
+--m 4 \
+--warehouse-dir /user/sqoop/worldDB_external
