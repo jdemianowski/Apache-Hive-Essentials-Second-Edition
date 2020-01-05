@@ -66,3 +66,63 @@ select current_database();
 
 alter database test_db_2 set location 'new location';
 
+create table select_tb as select * from city;
+
+create table like_tb like city;
+
+show columns in city;
+
+show create table city;
+
+show tblproperties city;
+
+create table test_tb_3  stored as parquet as select * from city;
+
+show create table city;
+
+SET hive.exec.dynamic.partition=true;
+SET hive.exec.dynamic.partition.mode=nonstrict;
+SET hive.optimize.sort.dynamic.partition=true;
+SET hive.exec.max.dynamic.partitions=500000;
+SET  hive.exec.max.dynamic.partitions.pernode=500000;
+set hive.enforce.bucketing=true;
+
+
+insert into table test_tb_4 partition(countrycode)
+select id, name, district, population, countrycode from city;
+
+select name, population from test_tb_4 where countrycode = 'ARG';
+
+select name, population from city where countrycode = 'ARG';
+
+select name, population from test_tb_buckets where countrycode = 'ARG';
+
+drop table if exists test_tb_buckets;
+CREATE TABLE `test_tb_buckets`(
+  `id` int,
+  `name` string,
+  `district` string,
+  `population` int,
+  countrycode string)
+  clustered by (countrycode) sorted by (countrycode) into 128 buckets
+row format delimited
+stored as parquet;
+
+insert into table test_tb_buckets
+select id, name, district, population, countrycode from city;
+
+drop table if exists test_tb_4;
+CREATE TABLE `test_tb_4`(
+  `id` int,
+  `name` string,
+  `district` string,
+  `population` int)
+  partitioned by (countrycode string)
+row format delimited
+stored as parquet;
+
+
+create database if not exists adventureworks;
+create database if not exists chinook;
+create database if not exists usda;
+create database if not exists worldDB;
