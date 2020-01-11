@@ -38,10 +38,11 @@ SET hive.intermediate.compression.codec=org.apache.hadoop.io.compress.SnappyCode
 
 select * from city_orc limit 10;
 -- 24 s.
-select sum(population) from city_orc group by (countrycode);
+use worlddb;
+select sum(population) from city group by (countrycode);
 -- 38/40 s.
-select country.name, sum(city_orc.population), avg(city_orc.population), count(*)
-from city_orc join country on country.code = city_orc.countrycode
+select country.name, sum(city.population), avg(city.population), count(*)
+from city join country on country.code = city.countrycode
 group by (country.name);
 
 
