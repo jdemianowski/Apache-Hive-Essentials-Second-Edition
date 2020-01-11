@@ -26,3 +26,4 @@ sqoop import-all-tables "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
 --username postgres --password cloudera \
 --m 4 \
 --warehouse-dir /user/sqoop/worldDB_external
+
