@@ -36,10 +36,21 @@ select sum(population) from city group by (countrycode);
 -- 38/40 s.
 select cr.name, sum(co.population), avg(co.population), count(*)
 from city_orc as co join country cr on cr.code = co.countrycode
-group by (cr.name);
+group by (cr.name)
+order by cr.name;
 
 -- 4.8 s.
 select * from city order by population;
 
 -- 2 s.
 select * from (select * from city CLUSTER BY population) t order by population;
+
+
+-- 36 s.
+select distinct cou.name from country cou
+join city ci on ci.countrycode = cou.code
+where ci.population > 5000000;
+
+-- 34 s.
+select distinct cou.name from country cou
+join city ci on (ci.countrycode = cou.code and cou.population > 5000000);

@@ -19,14 +19,19 @@ netstat -tulnp | grep 7180
 sudo groupadd supergroup
 sudo usermod -a -G supergroup mapred
 sudo usermod -a -G supergroup hdfs
-sudo hdfs dfs -chmod 775 /
+sudo usermod -a -G supergroup kuba
+sudo -u hdfs hdfs dfs -chmod 775 /
+# sudo hdfs dfs -chmod 775 /
 sudo usermod -a -G supergroup hive
 
-set yarn.nodemanager.resource.memory-mb=8096
+sudo -u hdfs hadoop fs -mkdir /user/root
+sudo -u hdfs hadoop fs -mkdir /user/kuba
+sudo -u hdfs hadoop fs -chown root /user/root
+sudo -u hdfs hadoop fs -chown kuba /user/kuba
 
+yarn.nodemanager.resource.memory-mb=8096
 yarn.scheduler.minimum-allocation-mb: 2048
 yarn.scheduler.maximum-allocation-mb: 8096
-
 yarn.scheduler.minimum-allocation-vcores=1
 yarn.scheduler.maximum-allocation-vcores=4
 
@@ -41,7 +46,7 @@ sudo vim /etc/hive/conf/beeline-hs2-connection.xml
 <configuration>
 <property>
   <name>beeline.hs2.connection.user</name>
-  <value>osboxes</value>
+  <value>kuba</value>
 </property>
 <property>
   <name>beeline.hs2.connection.password</name>
@@ -53,26 +58,31 @@ yarn.scheduler.capacity.maximum-am-resource-percent = 0.8
 
 hdfs dfs -rm -f -r  hdfs://osboxes.local:8020/user/osboxes/*
 
-yum install stress-ng -y
-stress-ng --cpu 4 --perf -t 60
+sudo yum install stress-ng -y
+sudo stress-ng --cpu 4 --perf -t 60
 
 # install sample databases
+sudo yum install postgres* -y
 sudo postgresql-setup initdb
 sudo systemctl start postgresql
 sudo systemctl enable postgresql
 
-psql -d template1
-createdb
-exit
-
 sudo -u postgres -i
+createdb kuba -O kuba
 psql
 alter user kuba createdb;
 ALTER USER kuba WITH SUPERUSER;
 alter user kuba with password 'cloudera';
 exit
 
+psql -d template1
+createdb
+exit
+
+sudo systemctl restart postgresql
+
 git clone https://github.com/morenoh149/postgresDBSamples.git
+cd postgresDBSamples/
 cd adventureworks
 unzip data.zip
 psql -c "CREATE DATABASE \"adventureworks\";"
