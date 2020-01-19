@@ -26,8 +26,10 @@ sudo usermod -a -G supergroup hive
 
 sudo -u hdfs hadoop fs -mkdir /user/root
 sudo -u hdfs hadoop fs -mkdir /user/kuba
+sudo -u hdfs hadoop fs -mkdir /user/hue
 sudo -u hdfs hadoop fs -chown root /user/root
 sudo -u hdfs hadoop fs -chown kuba /user/kuba
+sudo -u hdfs hadoop fs -chown hue /user/hue
 
 yarn.nodemanager.resource.memory-mb=8096
 yarn.scheduler.minimum-allocation-mb: 2048
@@ -117,3 +119,9 @@ sudo  systemctl restart postgresql
 # check
 netstat -nlt | grep 5432
 
+
+# problem - metastore z hive nie chce wystartować, name node wszedł w safe mode
+sudo -u hdfs hdfs fsck /
+sudo -u hdfs hdfs fsck -list-corruptfileblocks
+sudo -u hdfs hdfs fsck / -delete
+sudo -u hdfs hdfs dfsadmin -safemode leave
